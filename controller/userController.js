@@ -31,11 +31,30 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     password: newCode,
   });
 
-  sendEmail(email, newCode);
+  // sendEmail(email, newCode);
+  const token = jwt.sign(
+    { id: user.id, type: "user" },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRE,
+    }
+  );
+
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") {
+    options.secure = true;
+  }
 
   res.status(201).json({
     success: true,
     data: user,
+    token
   });
 });
 
@@ -86,7 +105,7 @@ exports.sendVerificationCode = asyncHandler(async (req, res, next) => {
 exports.loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  if (!email) {
     return next(new ErrorResponse(`Email or code are not enter`, 400));
   }
 
@@ -100,11 +119,11 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Not valid email or password.`, 400));
   }
 
-  const isMatch = await bcrypt.compare(password.toString(), user.password);
+  // const isMatch = await bcrypt.compare(password.toString(), user.password);
 
-  if (!isMatch) {
-    return next(new ErrorResponse(`Not valid email or password`, 400));
-  }
+  // if (!isMatch) {
+  //   return next(new ErrorResponse(`Not valid email or password`, 400));
+  // }
 
   const token = jwt.sign(
     { id: user.id, type: "user" },

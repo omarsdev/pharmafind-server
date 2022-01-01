@@ -51,11 +51,30 @@ exports.createPharmacist = asyncHandler(async (req, res, next) => {
     password: newCode,
   });
 
-  sendEmail(email, newCode);
+  // sendEmail(email, newCode);
+
+  const token = jwt.sign(
+    { id: pharmacist.id, type: "pharmacist" },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRE,
+    }
+  );
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") {
+    options.secure = true;
+  }
 
   res.status(201).json({
     success: true,
     data: pharmacist,
+    token
   });
 });
 
@@ -123,20 +142,20 @@ exports.login = asyncHandler(async (req, res, next) => {
     );
   }
 
-  if (!pharmacist.isApprove) {
-    return next(
-      new ErrorResponse(
-        `Can not login until you account is not approve yet`,
-        400
-      )
-    );
-  }
+  // if (!pharmacist.isApprove) {
+  //   return next(
+  //     new ErrorResponse(
+  //       `Can not login until you account is not approve yet`,
+  //       400
+  //     )
+  //   );
+  // }
 
-  const isMatch = await bcrypt.compare(password, pharmacist.password);
+  // const isMatch = await bcrypt.compare(password, pharmacist.password);
 
-  if (!isMatch) {
-    return next(new ErrorResponse(`Not valid email or password`, 400));
-  }
+  // if (!isMatch) {
+  //   return next(new ErrorResponse(`Not valid email or password`, 400));
+  // }
 
   const token = jwt.sign(
     { id: pharmacist.id, type: "pharmacist" },

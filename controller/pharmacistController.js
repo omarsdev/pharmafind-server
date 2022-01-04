@@ -74,7 +74,7 @@ exports.createPharmacist = asyncHandler(async (req, res, next) => {
   res.status(201).json({
     success: true,
     data: pharmacist,
-    token
+    token,
   });
 });
 
@@ -124,7 +124,7 @@ exports.sendVerificationCode = asyncHandler(async (req, res, next) => {
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  if (!email) {
     return next(
       new ErrorResponse(`Phone number or password are not valid`, 400)
     );

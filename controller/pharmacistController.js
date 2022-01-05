@@ -142,14 +142,14 @@ exports.login = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // if (!pharmacist.isApprove) {
-  //   return next(
-  //     new ErrorResponse(
-  //       `Can not login until you account is not approve yet`,
-  //       400
-  //     )
-  //   );
-  // }
+  if (!pharmacist.isApprove) {
+    return next(
+      new ErrorResponse(
+        `Can not login until you account is not approve yet`,
+        400
+      )
+    );
+  }
 
   // const isMatch = await bcrypt.compare(password, pharmacist.password);
 

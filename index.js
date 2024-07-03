@@ -17,7 +17,7 @@ app.use(cors({ origin: true, credentials: true }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-//Cookie Parser
+//Cookie Parser.
 app.use(cookieParser());
 //upload photo
 app.use(fileUpload());
